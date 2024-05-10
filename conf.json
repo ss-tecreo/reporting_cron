@@ -1,0 +1,27 @@
+{
+	"hostUrl": "",
+	"emailApp":
+	{
+		"user": "automated_reports@tecreo.io",
+		"password": "ziaehegsggshkhnf",
+		"imap_url": "imap.gmail.com",
+		"readonly": "False",
+		"dir_name": "attachment"
+	},
+	"snowflake":
+	{
+		"user": "prgmtc",
+		"password": "t4unQ7EB7XNaEaH*8%5",
+		"account": "TN45927.ap-southeast-1",
+		"warehouse": "DEV_REPORTING_ENGINE_WH",
+		"database": "TECREO_DEV",
+		"schema": "TECH_POC"
+	},
+	"mysqlConf":
+	{
+		"host": "127.0.0.1",
+		"user": "root",     
+		"password": "",   
+		"database": "tecreo"
+	}
+}

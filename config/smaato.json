@@ -1,0 +1,63 @@
+{
+    "Date":{
+        "key":"",
+        "column":"date",
+        "type":"TIMESTAMP",
+        "comment":"date and Time"
+    },
+    "Demand_Partner":{
+        "key":"",
+        "column":"demand_partner",
+        "type":"STRING",
+        "comment":"Demand Partner"
+    },
+    "Integration_Type":{
+        "key":"",
+        "column":"integration_type",
+        "type":"STRING",
+        "comment":"Demand Partner"
+    },
+    "Deal_Name":{
+        "key":"",
+        "column":"deal_name",
+        "type":"STRING",
+        "comment":"Deal Name"
+    },
+    "Deal_ID":{
+        "key":"",
+        "column":"deal_ID",
+        "type":"STRING",
+        "comment":"Deal ID"
+    },
+    "Interactions":{
+        "key":"",
+        "column":"interactions",
+        "type":"INTEGER",
+        "comment":"Interactions"
+    },
+    "Bidding_Interactions":{
+        "key":"",
+        "column":"biddingnt_interactions",
+        "type":"INTEGER",
+        "comment":"Bidding Interactions"
+    },
+    "eCPM":{
+        "key":"",
+        "column":"ecpm",
+        "type":"STRING",
+        "comment":"ecpm"
+    },
+    "Impressions":{
+        "key":"",
+        "column":"impressions",
+        "type":"INTEGER",
+        "comment":"Impressions"
+    },
+    "Revenue":{
+        "key":"",
+        "column":"revenue",
+        "type":"FLOAT",
+        "comment":"Revenue"
+    }
+}
+

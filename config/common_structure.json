@@ -1,0 +1,139 @@
+{
+    "date":{
+        "key":"",
+        "column":"date",
+        "type":"TIMESTAMP",
+        "comment":"date and Time"
+    },
+    "reportingPartner":{
+        "key":"",
+        "column":"reporting_partner",
+        "type":"STRING",
+        "comment":"Reporting Partner"
+    },
+    "demandPartner":{
+        "key":"",
+        "column":"demand_partner",
+        "type":"STRING",
+        "comment":"Demand Partner"
+    },
+    "PublisherName":{
+        "key":"",
+        "column":"publisher_name",
+        "type":"STRING",
+        "comment":"Publisher Name"
+    },"bundleDomain":{
+        "key":"",
+        "column":"bundle_domain",
+        "type":"STRING",
+        "comment":"App Or Site Domain"
+    },
+    "dealName":{
+        "key":"",
+        "column":"deal_name",
+        "type":"STRING",
+        "comment":"Auction Package Deal Name"
+    },
+    "Deal_ID":{
+        "key":"",
+        "column":"deal_ID",
+        "type":"STRING",
+        "comment":"Deal ID"
+    },
+    "Interactions":{
+        "key":"",
+        "column":"interactions",
+        "type":"INTEGER",
+        "comment":"Interactions"
+    },
+    "Bidding_Interactions":{
+        "key":"",
+        "column":"biddingnt_interactions",
+        "type":"INTEGER",
+        "comment":"Bidding Interactions"
+    },
+    "SeatName":{
+        "key":"",
+        "column":"seat_name",
+        "type":"STRING",
+        "comment":"Seat Name"
+    },"IsRewarded":{
+        "key":"",
+        "column":"is_rewarded",
+        "type":"INTEGER",
+        "comment":"Is Rewarded"
+    },"CompanyVendorCost":{
+        "key":"",
+        "column":"company_vendor_cost",
+        "type":"FLOAT",
+        "comment":"Company Vendor Cost"
+    },"SmartGrossECpm":{
+        "key":"",
+        "column":"ecpm",
+        "type":"FLOAT",
+        "comment":"Smart Gross ECpm"
+    },"BuyerSpend":{
+        "key":"",
+        "column":"buyer_spend",
+        "type":"FLOAT",
+        "comment":"Buyer Spend"
+    },"ViewabilityRate":{
+        "key":"",
+        "column":"viewability_rate",
+        "type":"FLOAT",
+        "comment":"ViewabilityRate"
+    },"VideoComplete":{
+        "key":"",
+        "column":"video_complete",
+        "type":"INTEGER",
+        "comment":"VideoComplete"
+    },"Bids":{
+        "key":"",
+        "column":"bids",
+        "type":"INTEGER",
+        "comment":"Bids"
+    },
+    "BidRequestCompetingDeal":{
+        "key":"",
+        "column":"bid_request_competing_deal",
+        "type":"INTEGER",
+        "comment":"Bid Request Competing Deal"
+    },"Clicks":{
+        "key":"",
+        "column":"clicks",
+        "type":"INTEGER",
+        "comment":"Clicks"
+    },
+    "ClickRate":{
+        "key":"",
+        "column":"click_rate",
+        "type":"FLOAT",
+        "comment":"Click Rate"
+    },
+    "WinningBids":{
+        "key":"",
+        "column":"winning_bids",
+        "type":"INTEGER",
+        "comment":"WinningBids"
+    },"Impressions":{
+        "key":"",
+        "column":"impressions",
+        "type":"INTEGER",
+        "comment":"Impressions"
+    },"Auctions":{
+        "key":"",
+        "column":"auctions",
+        "type":"INTEGER",
+        "comment":"Auctions"
+    },
+    "Revenue":{
+        "key":"",
+        "column":"revenue",
+        "type":"FLOAT",
+        "comment":"Revenue"
+    }
+}
+
+
+
+
