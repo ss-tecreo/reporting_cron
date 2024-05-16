@@ -1,0 +1,80 @@
+{
+    "date":{
+        "key":"",
+        "column":"date",
+        "type":"TIMESTAMP",
+        "comment":"date and Time"
+    },
+    "supplyPartner":{
+        "key":"",
+        "column":"supply_partner",
+        "type":"STRING",
+        "comment":"Supply Partner"
+    },
+    "dealName":{
+        "key":"",
+        "column":"deal_name",
+        "type":"STRING",
+        "comment":"Auction Package Deal Name"
+    },
+    "Deal_ID":{
+        "key":"",
+        "column":"deal_ID",
+        "type":"STRING",
+        "comment":"Deal ID"
+    },"Impressions":{
+        "key":"",
+        "column":"impressions",
+        "type":"INTEGER",
+        "comment":"Impressions"
+    },
+    "Revenue":{
+        "key":"",
+        "column":"revenue",
+        "type":"FLOAT",
+        "comment":"Revenue"
+    },"mediaCost":{
+        "key":"",
+        "column":"media_cost",
+        "type":"FLOAT",
+        "comment":"Media Cost"
+    },"margin":{
+        "key":"",
+        "column":"margin",
+        "type":"FLOAT",
+        "comment":"Margin"
+    }
+}
+
+
+CREATE TABLE `tbl_aggregated_daily` (
+  `id` int(20) NOT NULL,
+  `date` timestamp NOT NULL ,
+  `supply_partner` varchar(100) NOT NULL,
+  `deal_name` varchar(200) NOT NULL,
+  `deal_ID` varchar(200) NOT NULL,
+  `impressions` double NOT NULL,
+  `revenue` double NOT NULL,
+  `media_cost` double NOT NULL,
+  `margin` double NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `tbl_aggregated_daily`
+--
+ALTER TABLE `tbl_aggregated_daily`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `tbl_aggregated_daily`
+--
+ALTER TABLE `tbl_aggregated_daily`
+  MODIFY `id` int(20) NOT NULL AUTO_INCREMENT;

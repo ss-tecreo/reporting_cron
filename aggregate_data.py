@@ -4,12 +4,20 @@ import os
 import json
 import csv
 import re
+from datetime import datetime
 
 
-
-destTableName = "tbl_aggregated"
+destTableName = "tbl_aggregated_daily"
 pName = sys.argv[1]
 dt = sys.argv[2]
+
+# Convert to datetime object
+date_object = datetime.strptime(sys.argv[2], "%Y%m%d")
+
+# Convert back to string with desired format
+formatted_date = date_object.strftime("%Y-%m-%d")
+
+print(formatted_date)
 
 
 
@@ -19,7 +27,7 @@ with open('conf.json') as f:
     #print(config)
 
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'common'))
 from mysql_connector import connection
 print(connection)
 
@@ -30,20 +38,13 @@ def insertIntoAggregatedTable(parnerName):
     # Create a cursor object
     cursor = connection.cursor()
     # Read SQL queries from the .sql file
-    with open("config/" + parnerName + ".sql", "r") as file:
+    with open("config/" + parnerName + "/query.sql", "r") as file:
         queries = file.read()
-    
-    #print(queries)
-    pattern_to_replace = "[CURR_DT]"
-    # Create a regex pattern to match the substring
-    pattern = re.compile(re.escape(pattern_to_replace))
-    
-    # Use re.sub() to replace the substring with the replacement string
-    query_string = re.sub(pattern, dt, queries)
-    #print(query_string)  # Output: "hello Python"
+    queries = queries.replace("[REPORT_DATE]", dt)
+    queries = queries.replace("[REPORT_DATE_FORMATED]", formatted_date)
     
     # Execute the SQL INSERT INTO statement
-    cursor.execute(query_string)
+    cursor.execute(queries)
 
     # Commit the transaction
     connection.commit()
@@ -51,8 +52,6 @@ def insertIntoAggregatedTable(parnerName):
     # Close the cursor and connection
     cursor.close()
 
-
-    test=parnerName
     return True
 
 

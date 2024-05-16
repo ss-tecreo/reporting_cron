@@ -1,0 +1,63 @@
+{
+    "Deal_ID":{
+        "key":"",
+        "column":"deal_ID",
+        "type":"STRING",
+        "comment":"Deal ID"
+    },
+    "Deal_token":{
+        "key":"",
+        "column":"deal_token",
+        "type":"STRING",
+        "comment":"Deal Token"
+    },
+    "Deal_Name":{
+        "key":"",
+        "column":"deal_name",
+        "type":"STRING",
+        "comment":"Deal Name"
+    },
+    "Impressions":{
+        "key":"",
+        "column":"impressions",
+        "type":"INTEGER",
+        "comment":"Impressions"
+    },
+    "CPM":{
+        "key":"",
+        "column":"cpm",
+        "type":"INTEGER",
+        "comment":"cpm"
+    },
+    "Spends":{
+        "key":"",
+        "column":"revenue",
+        "type":"FLOAT",
+        "comment":"Revenue"
+    },
+    "MediaCost":{
+        "key":"",
+        "column":"media_cost",
+        "type":"FLOAT",
+        "comment":"Media Cost"
+    },
+    "CTR":{
+        "key":"",
+        "column":"ctr",
+        "type":"FLOAT",
+        "comment":"CTR"
+    },
+    "VTR":{
+        "key":"",
+        "column":"vtr",
+        "type":"FLOAT",
+        "comment":"VTR"
+    },
+    "Margin":{
+        "key":"",
+        "column":"margin",
+        "type":"FLOAT",
+        "comment":"Media Margin"
+    }
+}
+

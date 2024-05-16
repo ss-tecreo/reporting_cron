@@ -13,19 +13,25 @@ date_obj = datetime.strptime(dt, '%Y%m%d')
 # Format the datetime object as 'd m Y'
 formatted_date = date_obj.strftime('%d/%m/%Y')
 print(formatted_date)
+
 tableName= pName + "_" + dt
+csvPath = "attachment/"+ dt + "/" + tableName +".csv"
+if pName == "loopme":
+    csvPath = "attachment/"+ dt + "/1_" + tableName +".csv"
+    csvPath_2 = "attachment/"+ dt + "/2_" + tableName +".csv"
+
 
 print(sys.argv)
 with open('conf.json') as f:
     config = json.load(f)
     #print(config)
 
-with open(os.path.dirname(__file__) + '/config/' + pName + '.json') as f:
+with open(os.path.dirname(__file__) + '/config/' + pName + '/tbl_structure.json') as f:
     schema = json.load(f)
     #print(schema)
 
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'common'))
 from mysql_connector import connection
 #print(connection)
 
@@ -80,10 +86,11 @@ def insertIntoRowTable(data,parnerName):
     return True
 
 
-csvPath = "attachment/"+ tableName +".csv"
+
 
 returnVal = createCurrentTable(pName)
 #print("RETRUN VAL " + returnVal)
+
 if returnVal != "Failed":
     print(csvPath)
     #call function to get csv data
@@ -111,14 +118,68 @@ if returnVal != "Failed":
         next(csv_reader)  # Skip the header row if it exists
         
         # Extract data from the CSV file
-        data = [tuple(row) for row in csv_reader ]  # Convert each row to a tuple
+        #data = [tuple(row) for row in csv_reader ]  # Convert each row to a tuple
         
+        # Extract data from the CSV file, handling blank values for integer columns
+        data = []
+        for row in csv_reader:
+            # Convert each column to the appropriate data type
+            cleaned_row = []
+            for value in row:
+                if value == "": 
+                    cleaned_row.append(0)
+                else:
+                    if value == 0: 
+                        cleaned_row.append(value)
+                    else:
+                        cleaned_row.append(value)
+
+            data.append(tuple(cleaned_row))  # Convert each row to a tuple and add it to the data list
+
         #print(data)
         # Execute the SQL INSERT query with multiple parameter sets
         cursor.executemany(insert_query, data)
 
         # Commit the transaction
         connection.commit()
+
+    if pName == "loopme":
+        cursor = connection.cursor()
+        with open(csvPath_2, 'r') as csv_file:
+            csv_reader = csv.reader(csv_file)
+            next(csv_reader)  # Skip the header row if it exists
+            
+            # Extract data from the CSV file
+            #data = [tuple(row) for row in csv_reader ]  # Convert each row to a tuple
+            
+            # Extract data from the CSV file, handling blank values for integer columns
+            data = []
+            for row in csv_reader:
+                # Convert each column to the appropriate data type
+                cleaned_row = []
+                for value in row:
+                    if value == "": 
+                        cleaned_row.append(0)
+                    else:
+                        if value == 0: 
+                            cleaned_row.append(value)
+                        else:
+                            cleaned_row.append(value)
+
+                data.append(tuple(cleaned_row))  # Convert each row to a tuple and add it to the data list
+
+            #print(data)
+            # Execute the SQL INSERT query with multiple parameter sets
+            cursor.executemany(insert_query, data)
+
+            # Commit the transaction
+            connection.commit()
+
     
 
 print(returnVal)
+
+
+#example of command : python3 insert_raw_data_in_to_table.py equativ 20240511
+#example of command : python3 insert_raw_data_in_to_table.py smaato 20240511
+#example of command : python3 insert_raw_data_in_to_table.py loopme 20240511

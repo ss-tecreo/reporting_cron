@@ -5,7 +5,7 @@
 		"user": "automated_reports@tecreo.io",
 		"password": "ziaehegsggshkhnf",
 		"imap_url": "imap.gmail.com",
-		"readonly": "False",
+		"readonly": "TRUE",
 		"dir_name": "attachment"
 	},
 	"snowflake":

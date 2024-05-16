@@ -17,13 +17,13 @@ from currencyUpdator import CURRENCYLAYER
 # Create an instance of the class
 currObj = CURRENCYLAYER('test')
 #print(currObj)
-input_array = {'INR': '', 'EUR': '','MMK':''}
+input_array = {'INR': '', 'EUR': ''}
 # Call the method of the class
 json_data = currObj.greet(input_array)
 
 
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'lib'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'common'))
 from mysql_connector import connection
 #print(connection)
 
@@ -38,7 +38,7 @@ if connection.is_connected():
         cursor = connection.cursor()
 
         # Define the INSERT INTO statement
-        insert_query = "INSERT INTO currency (INR, EUR,USD) VALUES (%s, %s,%s)"
+        insert_query = "INSERT INTO tbl_currency (INR, EUR,USD) VALUES (%s, %s,%s)"
         values = []
         # Define the values to insert
         #for data in json_data:
@@ -60,3 +60,5 @@ if connection.is_connected():
         connection.close()
 else:
     print('Connection failed.')
+
+#example : python3 update_currency.py
