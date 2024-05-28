@@ -3,7 +3,7 @@
         "key":"",
         "column":"date",
         "type":"TIMESTAMP",
-        "comment":"date and Time"
+        "comment":"date and Time Hourly"
     },
     "AuctionPackageDealName":{
         "key":"",
@@ -17,23 +17,17 @@
         "type":"STRING",
         "comment":"Publisher Name"
     },
-    "AppOrSiteDomain":{
+    "BuyerSpendEuro":{
         "key":"",
-        "column":"app_or_site_domain",
-        "type":"STRING",
-        "comment":"App Or Site Domain"
+        "column":"buyer_spend_euro",
+        "type":"FLOAT",
+        "comment":"Buyer Spend Euro"
     },
-    "SeatName":{
+    "Impressions":{
         "key":"",
-        "column":"seat_name",
-        "type":"STRING",
-        "comment":"Seat Name"
-    },
-    "IsRewarded":{
-        "key":"",
-        "column":"is_rewarded",
+        "column":"impressions",
         "type":"INTEGER",
-        "comment":"Is Rewarded"
+        "comment":"Impressions"
     },
     "CompanyVendorCostInEuro":{
         "key":"",
@@ -47,66 +41,10 @@
         "type":"FLOAT",
         "comment":"Smart Gross ECpm Euro"
     },
-    "BuyerSpendEuro":{
-        "key":"",
-        "column":"buyer_spend_euro",
-        "type":"FLOAT",
-        "comment":"Buyer Spend Euro"
-    },
-    "Impressions":{
-        "key":"",
-        "column":"impressions",
-        "type":"INTEGER",
-        "comment":"Impressions"
-    },
     "ViewabilityRate":{
         "key":"",
         "column":"viewability_rate",
         "type":"FLOAT",
         "comment":"ViewabilityRate"
-    },
-
-    "Auctions":{
-        "key":"",
-        "column":"auctions",
-        "type":"INTEGER",
-        "comment":"Auctions"
-    },
-    "VideoComplete":{
-        "key":"",
-        "column":"video_complete",
-        "type":"INTEGER",
-        "comment":"VideoComplete"
-    },
-    "Bids":{
-        "key":"",
-        "column":"bids",
-        "type":"INTEGER",
-        "comment":"Bids"
-    },
-    "BidRequestCompetingDeal":{
-        "key":"",
-        "column":"bid_request_competing_deal",
-        "type":"INTEGER",
-        "comment":"Bid Request Competing Deal"
-    },
-    "Clicks":{
-        "key":"",
-        "column":"clicks",
-        "type":"INTEGER",
-        "comment":"Clicks"
-    },
-    "ClickRate":{
-        "key":"",
-        "column":"click_rate",
-        "type":"FLOAT",
-        "comment":"Click Rate"
-    },
-    "WinningBids":{
-        "key":"",
-        "column":"winning_bids",
-        "type":"INTEGER",
-        "comment":"WinningBids"
     }
 }
-

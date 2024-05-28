@@ -3,6 +3,7 @@ import datetime
 import imaplib
 import os
 import email
+import sys
 import zipfile
 import io
 import logging
@@ -14,14 +15,13 @@ import json
 #print(os.path.dirname(__file__))
 with open(os.path.dirname(__file__) + '/conf.json') as f:
     config = json.load(f)
-    #print(config)
+    print(config)
 
 user = config["emailApp"]["user"]
 password = config["emailApp"]["password"]
 imap_url = config["emailApp"]["imap_url"]
 readonly = False
 dir_name = config["emailApp"]["dir_name"]
-
 
 # printing logs
 logger = logging.getLogger(__name__)
@@ -31,12 +31,15 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 parser = argparse.ArgumentParser()
 parser.add_argument('--since', required=False, dest='days', type=str, help='provide a number to check mail "1"')
 parser.add_argument('--email_id', required=False, dest='email', type=str, help='provide a from email id')
+parser.add_argument('--name', required=True, dest='name', type=str, help='provide a supply partner name')
 args = parser.parse_args()
 
 if args.days is not None:
     date = (datetime.date.today() - datetime.timedelta(int(args.days))).strftime("%d-%b-%Y")
+    date_time = (datetime.date.today() - datetime.timedelta(int(args.days))).strftime("%Y%m%d%H%M%S")
 else:
     date = (datetime.date.today() - datetime.timedelta(1)).strftime("%d-%b-%Y")
+    date_time = (datetime.date.today() - datetime.timedelta(1)).strftime("%Y%m%d%H%M%S")
 
 
 # Create a directory to download attachment
@@ -61,13 +64,14 @@ def create_directory(dir_path=None):
 def search_mail_ids(connection, key=None, value=None, since=None):
     if key is not None and value is not None:
         logger.info(" scanning emails in 'Inbox' coming from email id:'{}' since: '{}'".format(value, since))
-        resp_type, mail_id_bytes = connection.search(None, '(SINCE {0})'.format(since), key, '"{}"'.format(value),'UNSEEN')
+        resp_type, mail_id_bytes = connection.search(None, '(SINCE {0})'.format(since), key, '"{}"'.format(value),
+                                                     'UNSEEN')
         if resp_type == 'OK' and mail_id_bytes is not None:
             logger.info(
                 " scanning status :'{}' matching email count: '{}'".format(resp_type, len(mail_id_bytes[0].split())))
     else:
         logger.info(" scanning emails in 'Inbox' coming from all email ids since: '{}'".format(since))
-        resp_type, mail_id_bytes = connection.search(None, '(SINCE {0})'.format(since), 'All')
+        resp_type, mail_id_bytes = connection.search(None, '(SINCE {0})'.format(since), 'UNSEEN')
         if resp_type == 'OK' and mail_id_bytes is not None:
             logger.info(
                 " scanning status :'{}' matching email count: '{}'".format(resp_type, len(mail_id_bytes[0].split())))
@@ -101,36 +105,27 @@ def write_attachment(file_name, data):
 
 
 #for Equativ condition
-def search_in_line_link_equativ(msg_body_data):
-    reg_str = "<a href=\"" + "(.*?)" + "\" style=\"display:"
+def search_in_line_link(msg_body_data):
+    if args.name.strip() == 'loopme':
+        reg_str = "<a href='" + "(.*?)" + "'>link</a>"
+    elif args.name.strip() == 'equativ':
+        reg_str = "<a href=\"" + "(.*?)" + "\" style=\"display:"  
+    else:
+        reg_str = " "
     res = re.findall(reg_str, msg_body_data)
     if len(res) > 0:
         logger.info("The Strings extracted : '{}'".format(str(res)))
         i = 0
         for link in res:
-            link_file_name = "equativ_" + datetime.datetime.today().strftime("%Y%m%d%H%M%S") + "_" + str(i) + ".csv"
-            path = os.path.dirname(__file__) + "/" + dir_name
-            cmd = "/usr/bin/curl -o " + path + "/" + link_file_name + " -L '" + link + "'"
-            cmd_process = subprocess.run(cmd, shell=True, capture_output=True, text=True, check=True)
-            logger.info(" Download file from url output: '{}', error: '{}'".format(cmd_process.stdout,cmd_process.stderr))
+            if args.name is not None:
+                link_file_name = args.name + "_" + date_time + datetime.datetime.today().strftime("%H%M%S") + "_" + str(
+                    i) + ".csv"
+                path = os.path.dirname(__file__) + "/" + dir_name
+                cmd = "/usr/bin/curl -o " + path + "/" + link_file_name + " -L '" + link + "'"
+                cmd_process = subprocess.run(cmd, shell=True, capture_output=True, text=True, check=True)
+                logger.info(
+                    " Download file from url output: '{}', error: '{}'".format(cmd_process.stdout, cmd_process.stderr))
             i += 1
-
-
-#for Loopme condition
-def search_in_line_link_loopme(msg_body_data):
-    reg_str = "<a href=\"" + "(.*?)" + "\" style=\"display:"
-    res = re.findall(reg_str, msg_body_data)
-    if len(res) > 0:
-        logger.info("The Strings extracted : '{}'".format(str(res)))
-        i = 0
-        for link in res:
-            link_file_name = "loopme_" + datetime.datetime.today().strftime("%Y%m%d%H%M%S") + "_" + str(i) + ".csv"
-            path = os.path.dirname(__file__) + "/" + dir_name
-            cmd = "/usr/bin/curl -o " + path + "/" + link_file_name + " -L '" + link + "'"
-            cmd_process = subprocess.run(cmd, shell=True, capture_output=True, text=True, check=True)
-            logger.info(" Download file from url output: '{}', error: '{}'".format(cmd_process.stdout,cmd_process.stderr))
-            i += 1
-
 
 
 # downloading attachments
@@ -152,10 +147,11 @@ def download_attachment(message):
                         z = zipfile.ZipFile(io.BytesIO(part.get_payload(decode=True)))
                         attach_data = z.read(filename.split(".")[0] + ".csv").decode('utf-8')
                         # replace filename prefix with partner name
-                        filename_current_date = filename.split(".")[0] + "_" + datetime.datetime.today().strftime(
-                            "%Y%m%d")
+                        #filename_current_date = filename.split(".")[0] + "_" + datetime.datetime.today().strftime( "%Y%m%d")
+                        filename_current_date = args.name + "_" + date_time
                         # write_attachment(filename.split(".")[0], attach_data)
-                        write_attachment(filename_current_date, attach_data)
+                        if "Sensedigital_Amazon_dealids_statistics" not in filename.split(".")[0]:
+                            write_attachment(filename_current_date, attach_data)
                     except Exception as err:
                         logger.info(" Can not open zip file : '{}'".format(err))
                 else:
@@ -173,9 +169,11 @@ def download_attachment(message):
                 try:
                     msg_body = part.get_payload(decode=True).decode('utf-8')
                     logger.info(" Checking attachment link in message body")
-                    search_in_line_link_equativ(msg_body)
+                    search_in_line_link(msg_body)
                 except Exception as err:
                     logger.info(" Can not find message body : '{}'".format(err))
+            else:
+                logger.info(" payload  '{}'".format(part.get_payload(decode=True)))
     if not attachment_file:
         logger.info(" there is no attachment files in email ")
     #send email for fail...
@@ -260,13 +258,6 @@ except Exception as error:
     logger.info(" can not establish connection to IMAP server, server responded: '{}'".format(error))
 
 # Example URL
-# python3 read_and_download_attachment_update.py --since 1 --email_id report@smartadserver.com
-# python3 read_and_download_attachment_update.py --since 1 --email_id smaato_statistics@smaato.com
-# python3 read_and_download_attachment_update.py --since 1 --email_id support@loopme.com
-
-
-
-# changes need 
-# 1. Need to paas partner name in command arguments also (equativ , smaato,loopme )
-# 2. smaato has attachments but equativ and loopme has link
-        # so need seperate function to search_in_line_link like "search_in_line_link_equativ" and "search_in_line_link_loopme"
+# ~/.venvs/foo/bin/python3 read_and_download_attachment_update.py --since 1 --email_id report@smartadserver.com  --name equativ
+# ~/.venvs/foo/bin/python3 read_and_download_attachment_update.py --since 1 --email_id smaato_statistics@smaato.com --name smaato
+# ~/.venvs/foo/bin/python3 read_and_download_attachment_update.py --since 2 --email_id support@loopme.com --name loopme

@@ -3,10 +3,10 @@ import sys
 import os
 import json
 
-with open('conf.json') as f:
+with open(os.path.dirname(__file__) + '/conf.json') as f:
     config = json.load(f)
+    #print(config)
 
-#print(config)
 
 # Add the relative path to the directory containing .py
 sys.path.append(os.path.join(os.path.dirname(__file__), 'classes'))
@@ -20,12 +20,12 @@ currObj = CURRENCYLAYER('test')
 input_array = {'INR': '', 'EUR': ''}
 # Call the method of the class
 json_data = currObj.greet(input_array)
-
+print(json_data)
 
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'common'))
 from mysql_connector import connection
-#print(connection)
+print(connection)
 
 
 
@@ -38,7 +38,7 @@ if connection.is_connected():
         cursor = connection.cursor()
 
         # Define the INSERT INTO statement
-        insert_query = "INSERT INTO tbl_currency (INR, EUR,USD) VALUES (%s, %s,%s)"
+        insert_query = "INSERT INTO tbl_currency (INR, EUR,USD,updatedOn) VALUES (%s, %s,%s,NOW())"
         values = []
         # Define the values to insert
         #for data in json_data:

@@ -1,5 +1,10 @@
 {
-    "Deal_ID":{
+    "Date":{
+        "key":"",
+        "column":"date",
+        "type":"TIMESTAMP",
+        "comment":"date and Time"
+    },"Deal_ID":{
         "key":"",
         "column":"deal_ID",
         "type":"STRING",
