@@ -1,0 +1,10 @@
+node_modules
+/logs
+.vscode
+*.lock.json
+*-lock.json
+Dockerfile
+.terrform
+terraform
+.github
+.gitignorea

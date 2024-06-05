@@ -1,0 +1,56 @@
+name: Reporting Deploy Container
+on:
+  push:
+    branches:
+      - feature/docker
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Set up doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DOCR_ACCESS_TOKEN }}
+
+    - name: Build Reporting image
+      run: |
+        echo "Build Reporting Image on Dev"
+        docker build -t registry.digitalocean.com/${{ secrets.DOCR_NAMESPACE }}/reporting-dev:latest .
+
+    - name: Get Registry
+      run: doctl registry get ${{ secrets.DOCR_NAMESPACE }}
+
+    - name: Log in to DO Container Registry
+      run: doctl registry login --expiry-seconds 600
+
+    - name: Push image to DigitalOcean Container Registry
+      run: |
+        docker push registry.digitalocean.com/${{ secrets.DOCR_NAMESPACE }}/reporting-dev:latest 
+
+    - name: Deploy to DigitalOcean Droplet VM
+      continue-on-error: true
+      run: |
+        echo "$SSH_KEY_ID_DEV" > private_key && chmod 600 private_key
+        ssh -o StrictHostKeyChecking=no -i private_key  ${USER}@167.172.75.90 <<END
+          cd ~
+          ./doctl registry login --expiry-seconds 1200
+          docker pull registry.digitalocean.com/tecreohub/reporting-dev:latest
+          docker stop reporting-dev || true && docker rm reporting-dev || true 
+          sleep 5
+#          if [ -z $(docker network ls --filter name=app-network --format="{{ .Name }}") ] ; then docker network create app-network ; fi
+          docker run -d --name reporting-dev --network app-network -p 4100:4100 registry.digitalocean.com/tecreohub/reporting-dev:latest
+        END
+      env:
+        SSH_KEY_ID_DEV: ${{ secrets.SSH_KEY_ID_DEV }}
+        DEV_DROPLET_IP: ${{ secrets.DEV_DROPLET_IP }}
+        DOCR_NAMESPACE: ${{ secrets.DOCR_NAMESPACE }}
+        USER: ${{ secrets.USER }}

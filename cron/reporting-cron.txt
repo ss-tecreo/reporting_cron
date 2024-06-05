@@ -1,0 +1,34 @@
+# Currency update every day @ 6AM
+00 06 * * * ~/.venvs/foo/bin/python3 /root/reporting_cron/update_currency.py
+
+00 08 * * * ~/.venvs/foo/bin/python3 /root/reporting_cron/update_deals.py
+
+
+
+
+
+#Download attachment from email
+#smaato
+25 22 * * * ~/.venvs/foo/bin/python3 /root/reporting_cron/read_and_download_attachment_update.py --since 1 --email_id smaato_statistics@smaato.com --name smaato
+#loopme now reports comes @5:32 AM IST
+40 05 * * * ~/.venvs/foo/bin/python3 /root/reporting_cron/read_and_download_attachment_update.py --since 1 --email_id support@loopme.com --name loopme
+#equativ now reports comes @7:30 AM IST
+40 07 * * * ~/.venvs/foo/bin/python3 /root/reporting_cron/read_and_download_attachment_update.py --since 1 --email_id report@smartadserver.com --name equativ
+
+
+#read csv and insert data into raw table
+#smaato
+35 22 * * * ~/.venvs/foo/bin/python3 /root/reporting_cron/insert_raw_data_in_to_table.py --since 1 --pname smaato
+#loopme
+45 05 * * * ~/.venvs/foo/bin/python3 /root/reporting_cron/insert_raw_data_in_to_table.py --since 1 --pname loopme
+#equativ
+45 07 * * * ~/.venvs/foo/bin/python3 /root/reporting_cron/insert_raw_data_in_to_table.py --since 1 --pname equativ
+
+
+# aggregate and update date into reporting final table 
+#smaato
+45 22 * * * ~/.venvs/foo/bin/python3 /root/reporting_cron/aggregate_data.py --since 1 --pname smaato
+#loopme
+48 05 * * * ~/.venvs/foo/bin/python3 /root/reporting_cron/aggregate_data.py --since 1 --pname loopme
+#equativ
+48 07 * * * ~/.venvs/foo/bin/python3 /root/reporting_cron/aggregate_data.py --since 1 --pname equativ
