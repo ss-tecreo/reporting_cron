@@ -14,13 +14,37 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'classes'))
 from currencyUpdator import CURRENCYLAYER
 
 
+
+finalData={}
+input_array = {'INR': '', 'EUR': 'USD'}
 # Create an instance of the class
-currObj = CURRENCYLAYER('test')
-#print(currObj)
-input_array = {'INR': '', 'EUR': ''}
+currObj = CURRENCYLAYER('USD')
 # Call the method of the class
-json_data = currObj.greet(input_array)
-print(json_data)
+json_data_USD = currObj.greet(input_array)
+#print(json_data_USD)
+
+finalData["USD_INR"]=json_data_USD["INR"];
+
+# Create an instance of the class
+currObjEUR = CURRENCYLAYER('EUR')
+json_data_EUR = currObjEUR.greet_EUR(input_array)
+print(json_data_EUR)
+
+#y = json.loads(json_data_USD)
+#print(json_data_USD["INR"])
+finalData["EUR_INR"]=json_data_EUR["INR"];
+print(finalData)
+
+
+#=====================================
+# Create an instance of the class
+##currObj = CURRENCYLAYER('test')
+#print(currObj)
+##input_array = {'INR': '', 'EUR': ''}
+# Call the method of the class
+##json_data = currObj.greet(input_array)
+#print(json_data)
+#=====================================
 
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'common'))
@@ -38,12 +62,12 @@ if connection.is_connected():
         cursor = connection.cursor()
 
         # Define the INSERT INTO statement
-        insert_query = "INSERT INTO tbl_currency (INR, EUR,USD,updatedOn) VALUES (%s, %s,%s,NOW())"
+        insert_query = "INSERT INTO tbl_currency (USD_INR, EUR_INR,updatedOn) VALUES (%s, %s,NOW())"
         values = []
         # Define the values to insert
         #for data in json_data:
             #print(json_data[data])
-        values.append((json_data["INR"], json_data["EUR"], 1))
+        values.append((finalData["USD_INR"], finalData["EUR_INR"]))
         #values = [('USD', 89.45),('EUR', 89.45),('INR', 89.45)]
         # Execute the INSERT INTO statement
         cursor.executemany(insert_query, values)

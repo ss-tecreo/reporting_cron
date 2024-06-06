@@ -19,19 +19,19 @@ SELECT
     package_deal AS deal_name, 
     "N/A" AS deal_ID,
     sum(impressions) as impressions,
-    sum(( currency.INR / currency.EUR ) * buyer_spend_euro) AS revenue,
-    sum(( currency.INR / currency.EUR ) * company_vendor_cost_in_euro) AS media_cost,
-    currency.INR / currency.EUR * ( sum(buyer_spend_euro) - sum(company_vendor_cost_in_euro)) as media_margin,
+    sum(( currency.EUR_INR ) * buyer_spend_euro) AS revenue,
+    currency.EUR_INR * ( sum(buyer_spend_euro) - sum(company_vendor_cost_in_euro)) as media_cost,
+    sum(( currency.EUR_INR ) * company_vendor_cost_in_euro) AS media_margin,
     sum(buyer_spend_euro) AS revenue_BASE,
-    sum(company_vendor_cost_in_euro) AS media_cost_BASE,
-    sum(buyer_spend_euro) - sum(company_vendor_cost_in_euro) as media_margin_BASE
+    sum(buyer_spend_euro) - sum(company_vendor_cost_in_euro) as media_cost_BASE,
+    sum(company_vendor_cost_in_euro) AS media_margin_BASE
 FROM
     tbl_equativ_[REPORT_DATE]
 JOIN
     (
         SELECT
-            EUR,
-            INR
+            EUR_INR,
+            USD_INR
         FROM
             tbl_currency
         ORDER BY

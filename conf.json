@@ -19,9 +19,9 @@
 	},
 	"mysqlConf":
 	{
-		"host": "127.0.0.1",
-		"user": "root",     
-		"password": "",   
+		"host": "localhost",
+		"user": "tecreo-dev",
+		"password": "TecReoDev@24",
 		"database": "tecreo"
 	}
 }

@@ -37,9 +37,6 @@ source_directory = os.path.dirname(__file__) + "/attachment"
 destination_directory = os.path.dirname(__file__) + "/attachment/" + dt
 
 
-
-
-
 def check_csv_has_data(file_path):
     # Check if the file exists
     if not os.path.isfile(file_path):
@@ -121,7 +118,7 @@ if pName == "loopme":
     csvPath_2 = os.path.dirname(__file__) + "/attachment/"+ dt + "/2_" + tableName +".csv"
 
 
-print(sys.argv)
+#print(sys.argv)
 with open(os.path.dirname(__file__) + '/conf.json') as f:
     config = json.load(f)
     #print(config)
@@ -179,13 +176,6 @@ def createCurrentTable(parnerName):
             #connection.close()
   
     return returnVal
-
-
-
-#insert data into table
-def insertIntoRowTable(data,parnerName):
-    test=parnerName
-    return True
 
 
 
@@ -270,10 +260,6 @@ if returnVal != "Failed":
         with open(csvPath_2, 'r') as csv_file:
             csv_reader = csv.reader(csv_file)
             next(csv_reader)  # Skip the header row if it exists
-            
-            # Extract data from the CSV file
-            #data = [tuple(row) for row in csv_reader ]  # Convert each row to a tuple
-            
             # Extract data from the CSV file, handling blank values for integer columns
             data = []
             cnt=0
@@ -299,6 +285,7 @@ if returnVal != "Failed":
                 insertData(insert_query , data , cnt)
                 data = []
                 cnt=0
+
 
 
 print(returnVal)

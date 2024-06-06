@@ -19,18 +19,18 @@ SELECT
     deal_name,
     "" as deal_ID,
     SUM(impressions) AS impressions,
-    SUM(revenue * currency.INR) AS revenue,
-    SUM(media_cost * currency.INR) AS media_cost,
-    SUM(((revenue*.7) - media_cost - (media_cost*.20)) * currency.INR) AS margin,
+    SUM(revenue * currency.USD_INR) AS revenue,
+    SUM(media_cost * currency.USD_INR) AS media_cost,
+    SUM(((revenue*.93) - media_cost*1.20) * currency.USD_INR) AS margin,
     SUM(revenue) AS revenue_BASE,
     SUM(media_cost) AS media_cost_BASE,
-    SUM((revenue*.7) - media_cost - (media_cost*.20)) AS margin_BASE
+    SUM((revenue*.93) - media_cost*1.20) AS margin_BASE
 FROM
     tbl_loopme_[REPORT_DATE]
 JOIN(
     SELECT
-        EUR,
-        INR
+        EUR_INR,
+        USD_INR
     FROM
         tbl_currency
     ORDER BY
