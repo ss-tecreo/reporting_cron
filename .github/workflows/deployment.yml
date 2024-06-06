@@ -40,7 +40,7 @@ jobs:
       continue-on-error: true
       run: |
         echo "$SSH_KEY_ID_DEV" > private_key && chmod 600 private_key
-        ssh -o StrictHostKeyChecking=no -i private_key  ${USER}@167.172.75.90 <<END
+        ssh -o StrictHostKeyChecking=no -i private_key  ${USER}@143.198.221.104 <<END
           cd ~
           ./doctl registry login --expiry-seconds 1200
           docker pull registry.digitalocean.com/tecreohub/reporting-dev:latest
