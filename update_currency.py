@@ -62,12 +62,12 @@ if connection.is_connected():
         cursor = connection.cursor()
 
         # Define the INSERT INTO statement
-        insert_query = "INSERT INTO tbl_currency (USD_INR, EUR_INR,updatedOn) VALUES (%s, %s,NOW())"
+        insert_query = "INSERT INTO tbl_currency (USD_INR_ACTUAL,EUR_INR_ACTUAL,USD_INR, EUR_INR,currency_margin,updatedOn) VALUES (%s,%s,%s,%s, %s,NOW())"
         values = []
         # Define the values to insert
         #for data in json_data:
             #print(json_data[data])
-        values.append((finalData["USD_INR"], finalData["EUR_INR"]))
+        values.append((finalData["USD_INR"], finalData["EUR_INR"],finalData["USD_INR"], finalData["EUR_INR"],1.2))
         #values = [('USD', 89.45),('EUR', 89.45),('INR', 89.45)]
         # Execute the INSERT INTO statement
         cursor.executemany(insert_query, values)

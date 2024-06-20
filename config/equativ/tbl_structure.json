@@ -1,5 +1,5 @@
 {
-    "Day":{
+    "Hour":{
         "key":"",
         "column":"date",
         "type":"TIMESTAMP",

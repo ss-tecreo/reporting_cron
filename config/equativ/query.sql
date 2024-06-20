@@ -40,6 +40,7 @@ JOIN
     ) AS currency
 WHERE
     DATE LIKE '%[REPORT_DATE_FORMATED]%'
+    AND buyer_spend_euro > 0
 
 GROUP BY 
     date,

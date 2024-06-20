@@ -26,17 +26,26 @@ else:
     dt = (datetime.date.today() - datetime.timedelta(int(noOfPreviousDay))).strftime("%Y%m%d")
 
 
-
 pName = args.pname
-tableName= pName + "_" + dt
+tableName= pName + "_" + dt;
+print(tableName);
 
-print(tableName)
-#=====================================
-# Specify the source and destination directories
-source_directory = os.path.dirname(__file__) + "/attachment"
-destination_directory = os.path.dirname(__file__) + "/attachment/" + dt
+#print(sys.argv)
+with open(os.path.dirname(__file__) + '/conf.json') as f:
+    config = json.load(f)
+    #print(config)
+
+with open(os.path.dirname(__file__) + '/config/' + pName + '/tbl_structure.json') as f:
+    schema = json.load(f)
+    #print(schema)
 
 
+sys.path.append(os.path.join(os.path.dirname(__file__), 'common'))
+from mysql_connector import connection
+#print(connection)
+
+
+#functions 
 def check_csv_has_data(file_path):
     # Check if the file exists
     if not os.path.isfile(file_path):
@@ -64,7 +73,8 @@ def check_csv_has_data(file_path):
             return False
     except Exception as e:
         print(f"An error occurred while checking the file: {e}")
-        return False
+
+#End of function def check_csv_has_data:
 
 # Example usage
 #file_path = 'your_file.csv'
@@ -72,77 +82,13 @@ def check_csv_has_data(file_path):
 #print(f"Has data: {has_data}")
 
 
-
-# Check if the directory exists
-if not os.path.exists(destination_directory):
-    # Create the directory
-    os.makedirs(destination_directory)
-    print(f"Directory '{destination_directory}' created successfully")
-else:
-    print(f"Directory '{destination_directory}' already exists")
-
-# Get a list of files in the source directory
-files = os.listdir(source_directory)
-
-fileNamePostfix = ".csv"
-fileNamePrefix = pName + "_" + dt
-# Iterate over each file in the source directory
-cnt = 1
-for file_name in files:
-    ink_file_name = ""
-    destination_directory_path= ""
-    if fileNamePrefix in file_name and fileNamePostfix in file_name:
-        source_file_path = os.path.join(source_directory, file_name)
-        if os.path.isfile(source_file_path):
-            fileDataMsg = ""
-            if check_csv_has_data(source_file_path):
-                if pName == "loopme":
-                    ink_file_name = str(cnt) + "_" + tableName +".csv"
-                    cnt=cnt+1
-                else:
-                    ink_file_name = tableName +".csv"
-                destination_directory_path = os.path.join(destination_directory, ink_file_name)
-                #print(ink_file_name)
-                #print("source_file_path")
-                #print(source_file_path)
-                #print(destination_directory_path)
-                shutil.move(source_file_path, destination_directory_path)
-        print(file_name)
-    else:
-        print("End of file")
-#======================================
-csvPath = os.path.dirname(__file__) + "/attachment/"+ dt + "/" + tableName +".csv"
-
-if pName == "loopme":
-    csvPath = os.path.dirname(__file__) + "/attachment/"+ dt + "/1_" + tableName +".csv"
-    csvPath_2 = os.path.dirname(__file__) + "/attachment/"+ dt + "/2_" + tableName +".csv"
-
-
-#print(sys.argv)
-with open(os.path.dirname(__file__) + '/conf.json') as f:
-    config = json.load(f)
-    #print(config)
-
-with open(os.path.dirname(__file__) + '/config/' + pName + '/tbl_structure.json') as f:
-    schema = json.load(f)
-    #print(schema)
-
-
-sys.path.append(os.path.join(os.path.dirname(__file__), 'common'))
-from mysql_connector import connection
-#print(connection)
-
-
-
-
-
-
+#-------------------------------------------
 #create table if not exist for current date
-def createCurrentTable(parnerName):
-    returnVal = parnerName
+def createCurrentTable(partnerName):
+    returnVal = partnerName
     if connection.is_connected():
 
-        print('Connected to MySQL database')
+        print('Connected to MySQL database for create new table ')
         try:
             # Create a cursor object
             cursor = connection.cursor()
@@ -167,6 +113,83 @@ def createCurrentTable(parnerName):
             connection.commit()
 
         except mysql.connector.Error as error:
+            print("Failed to Create table:", error)
+            returnVal = "Failed"
+            connection.close()
+        finally:
+            # Close the cursor and connection
+            cursor.close()
+            #connection.close()  
+    return returnVal
+
+#End of function def createCurrentTable(partnerName):
+
+columnNotInDB=[]
+# -------------------------------------------
+def insertIntoTable(source_file_path):
+    if connection.is_connected():
+        returnVal = "insert";
+        try:
+            insKey=''
+            insVal=''
+
+            with open(source_file_path, mode='r', encoding='utf-8-sig' , newline='') as file:
+                reader = csv.reader(file)
+                headers = next(reader)
+                print(headers)
+            tmpCnt=0
+            
+            for headersCol in headers:
+                if headersCol in schema:
+                    insKey = insKey + schema[headersCol]["column"] + ","
+                    insVal = insVal + "%s ,"
+                else:
+                    columnNotInDB.append(tmpCnt)
+                tmpCnt=tmpCnt+1
+
+            
+            insVal = insVal[:-1]
+            insKey = insKey[:-1]
+
+            insert_query = "INSERT INTO tbl_" + tableName + " (" + insKey + ") VALUES (" + insVal + ")"
+
+            cursor = connection.cursor()
+            with open(source_file_path, 'r') as csv_file:
+                csv_reader = csv.reader(csv_file)
+                #print(csv_reader);
+                next(csv_reader)  # Skip the header row if it exists
+                
+                # Extract data from the CSV file, handling blank values for integer columns
+                data = []
+                cnt=0
+                
+                for row in csv_reader:
+                    colCnt=-1
+                    #print(row)
+                    # Convert each column to the appropriate data type
+                    cleaned_row = []
+                    for value in row:
+                        colCnt=colCnt+1
+                        if(colCnt not in columnNotInDB): 
+                            if value == "": 
+                                cleaned_row.append(0)
+                            else:
+                                if value == 0: 
+                                    cleaned_row.append(value)
+                                else:
+                                    cleaned_row.append(value)
+                        
+                    data.append(tuple(cleaned_row))  # Convert each row to a tuple and add it to the data list
+                    cnt = cnt+1
+                    if cnt > 5000 :
+                        insertData(insert_query , data , cnt)
+                        data = []
+                        cnt=0
+                if cnt > 0 :
+                    insertData(insert_query , data , cnt)
+                    data = []
+                    cnt=0
+        except mysql.connector.Error as error:
             print("Failed to insert row:", error)
             returnVal = "Failed"
             connection.close()
@@ -174,121 +197,97 @@ def createCurrentTable(parnerName):
             # Close the cursor and connection
             cursor.close()
             #connection.close()
-  
     return returnVal
 
+# End of function insertIntoTable
+#--------------------------------------------
+
+def insertData(insert_query , data , cnt):
+    print("-----------------HI-----------------")
+    #print(data)
+    print(insert_query)
+    print("-----------------HI-----------------")
+    #print(data)
+    # Execute the SQL INSERT query with multiple parameter sets
+    cursor = connection.cursor();
+    cursor.executemany(insert_query, data)
+
+    # Commit the transaction
+    connection.commit()
+
+#end of function insertData
+#--------------------------------------------
 
 
+#=====================================
+# Specify the source and destination directories
+source_directory = os.path.dirname(__file__) + "/attachment"
+destination_directory = os.path.dirname(__file__) + "/attachment/" + dt
+fail_directory = os.path.dirname(__file__) + "/attachment/fail/" + dt
 
-returnVal = createCurrentTable(pName)
+# Check if the directory exists
+if not os.path.exists(fail_directory):
+    # Create the directory
+    os.makedirs(fail_directory)
+
+if not os.path.exists(destination_directory):
+    # Create the directory
+    os.makedirs(destination_directory)
+    print(f"Directory '{destination_directory}' created successfully")
+else:
+    print(f"Directory '{destination_directory}' already exists")
+
+
+# Get a list of files in the source directory
+files = os.listdir(source_directory)
+
+fileNamePostfix = ".csv"
+fileNamePrefix = pName + "_" + dt
+
+isTableCreated = createCurrentTable(pName)
 #print("RETRUN VAL " + returnVal)
 
-if returnVal != "Failed":
-    print(csvPath)
-    #call function to get csv data
-    cnt=0
-    insKey=''
-    insVal=''
-    for schemaData in schema:
-        insKey = insKey + schema[schemaData]["column"] + ","
-        insVal = insVal + "%s ,"
-        
-    insVal = insVal[:-1]
-    insKey = insKey[:-1]
+if isTableCreated != "Failed":
+    for file_name in files:
+        ink_file_name = ""
+        destination_directory_path= ""
+        fail_directory_path="";
+        fail_directory_path = os.path.join(fail_directory, ink_file_name)
+        if fileNamePrefix in file_name and fileNamePostfix in file_name:
+            source_file_path = os.path.join(source_directory, file_name)
+            if os.path.isfile(source_file_path):
+                fileDataMsg = ""
+                if check_csv_has_data(source_file_path):
+                    destination_directory_path = os.path.join(destination_directory, ink_file_name)
 
-    insert_query = "INSERT INTO tbl_" + tableName + " (" + insKey + ") VALUES (" + insVal + ")"
-
-    #print(" INSERT QUERY --------" )
-    #print(insert_query)
-    
-    
-    def insertData(insert_query , data , cnt):
-        print("-----------------HI-----------------")
-        print(cnt)
-        print(insert_query)
-        print("-----------------HI-----------------")
-        #print(data)
-        # Execute the SQL INSERT query with multiple parameter sets
-        cursor.executemany(insert_query, data)
-
-        # Commit the transaction
-        connection.commit()
-
-    
-
-    cursor = connection.cursor()
-    with open(csvPath, 'r') as csv_file:
-        csv_reader = csv.reader(csv_file)
-        next(csv_reader)  # Skip the header row if it exists
-        
-        # Extract data from the CSV file
-        #data = [tuple(row) for row in csv_reader ]  # Convert each row to a tuple
-        
-        # Extract data from the CSV file, handling blank values for integer columns
-        data = []
-        cnt=0
-        for row in csv_reader:
-            # Convert each column to the appropriate data type
-            cleaned_row = []
-            for value in row:
-                if value == "": 
-                    cleaned_row.append(0)
+                    #call function insert into table
+                    if insertIntoTable(source_file_path) != "Failed":
+                        shutil.move(source_file_path, destination_directory_path)
+                    else:
+                        #move to fail path
+                        shutil.move(source_file_path, fail_directory_path)
+                        print("FAIL -- insertIntoTable ")
                 else:
-                    if value == 0: 
-                        cleaned_row.append(value)
-                    else:
-                        cleaned_row.append(value)
+                    #move to fail path
+                    shutil.move(source_file_path, fail_directory_path)
+                    print("FAIL -- check_csv_has_data ")
+            else:
+                #move to fail path
+                shutil.move(source_file_path, fail_directory_path)
+                print("FAIL -- isfile ")
 
-            
-            data.append(tuple(cleaned_row))  # Convert each row to a tuple and add it to the data list
-            cnt = cnt+1
-            if cnt > 5000 :
-                insertData(insert_query , data , cnt)
-                data = []
-                cnt=0
-        if cnt > 0 :
-            insertData(insert_query , data , cnt)
-            data = []
-            cnt=0
-        
+#end of if isTableCreated
+#----------------------------------------------------------------------------------------------
+                
 
+# read all .csv for the partner one by one 
+    # createCurrentTable if not exist   
+    # Insert into table
+    # if inserted succesfully then move to date folder
+    # else move to fail folder 
 
+### =========================================================== ###
 
-
-    if pName == "loopme":
-        cursor = connection.cursor()
-        with open(csvPath_2, 'r') as csv_file:
-            csv_reader = csv.reader(csv_file)
-            next(csv_reader)  # Skip the header row if it exists
-            # Extract data from the CSV file, handling blank values for integer columns
-            data = []
-            cnt=0
-            for row in csv_reader:
-                # Convert each column to the appropriate data type
-                cleaned_row = []
-                for value in row:
-                    if value == "": 
-                        cleaned_row.append(0)
-                    else:
-                        if value == 0: 
-                            cleaned_row.append(value)
-                        else:
-                            cleaned_row.append(value)
-
-                data.append(tuple(cleaned_row))  # Convert each row to a tuple and add it to the data list
-                cnt = cnt+1
-                if cnt > 5000 :
-                    insertData(insert_query , data , cnt)
-                    data = []
-                    cnt=0
-            if cnt > 0 :
-                insertData(insert_query , data , cnt)
-                data = []
-                cnt=0
-
-
-
-print(returnVal)
 
 
 #example of command : ~/.venvs/foo/bin/python3 insert_raw_data_in_to_table.py --since 1 --pname equativ --date 20240511

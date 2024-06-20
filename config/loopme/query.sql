@@ -40,6 +40,7 @@ LIMIT 1
 ) AS currency
 WHERE
     DATE LIKE '%[REPORT_DATE_FORMATED]%'
+    AND revenue > 0
 GROUP BY
     date,
     deal_name;
